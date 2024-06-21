@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    ]
+        <div class="room">
+            <h1>Room code is {{code}}</h1>
+            <canvas id="whiteboard" width="700" height="500" style="border-style: solid;"></canvas>
+        </div>
+        <script>
+
+            var socketio = io();
+            const canvas = document.getElementById('whiteboard');
+            const context = canvas.getContext('2d');
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+            let tool = 'pen';
+    
+            function startDrawing(e) {
+                isDrawing = true;
+                [lastX, lastY] = [e.offsetX, e.offsetY];
+                context.beginPath();
+                context.moveTo(lastX, lastY);
+                socketio.emit("startDrawing",{pos: {x: lastX, y: lastY}});
+
+            }
+    
+            function stopDrawing() {
+                isDrawing = false;
+                //context.beginPath();
+            }
+    
+            function draw(e) {
+                if (!isDrawing) return;
+                const { offsetX, offsetY } = e;
+                context.lineWidth = 4;
+                context.strokeStyle = '#000';
+                context.fillStyle = '#000';
+    
+                if (tool === 'pen') {
+                    
+                    context.lineTo(offsetX, offsetY);
+                    context.stroke();
+                    
+                    socketio.emit("drawing", { pos: { x: offsetX, y: offsetY }, tool });
+                }
+            }
+    
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+    
+
+            socketio.on("startDrawing",(data)=>{
+                const { lastX, lastY } = data.pos;
+                context.beginPath();
+                context.moveTo(lastX, lastY);
+            })
+
+            socketio.on("drawing", (data) => {
+                const { x, y } = data.pos;
+                const tool = data.tool;
+                context.lineWidth = 2;
+                context.strokeStyle = '#000';
+                context.fillStyle = '#000';
+                
+                if (tool === 'pen') {
+                    //context.beginPath();
+                    context.lineTo(x, y);
+                    context.stroke();
+
+                    //context.lineTo(x, y);
+                    //context.stroke();
+                    //context.beginPath();
+                    //Scontext.moveTo(x, y);
+                }
+            });
+
+
+        </script>
+
+{% endblock %}

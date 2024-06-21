@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form method="post" class="homeForm">
+        <h3>Enter the ROOM</h3>         
+        <div>
+            <label>Name:</label>
+            <div class="input-group flex-nowrap">
+                <span class="input-group-text" id="addon-wrapping">@</span>
+                <input type="text" class="form-control" name="name" value="{{name}}"placeholder="Enter your username"  aria-label="Username" aria-describedby="addon-wrapping">
+            </div>
+        </div>
+        <div class="join">
+            <div class="input-group flex-nowrap">
+                <span class="input-group-text" id="addon-wrapping">*</span>
+                <input type="text" name="code" value="{{code}}" placeholder="Enter 4 digit room code"  class="form-control" aria-describedby="passwordHelpInline">
+            </div>
+
+        </div>
+        <button type="submit" name="join" class="btn btn-secondary">Join a ROOM</button>
+        <button type="submit" name="create" id="create-btn" class="btn btn-dark">Create a ROOM</button>
+    </form>
+    {% if error %}
+        <ul>
+            <li>{{error}}</li>
+        </ul>
+    {% endif %}
+{% endblock %}
